@@ -102,23 +102,6 @@ def main():
     sections = api_get(creds["api_url"], f"credit_analysis/dashboard-sections/{dashboard_id}/", token)
     print_json(f"DASHBOARD SECTIONS — {dashboard_title}", sections)
 
-    # 6. Get financial data tables for this deal
-    print(f"\nFetching financial data tables for deal: {deal_id}")
-    fin_tables = api_get(creds["api_url"], f"credit_analysis/deals/{deal_id}/fin_data_tables/", token)
-    print_json("FINANCIAL DATA TABLES", fin_tables)
-
-    # 7. If there are financial tables, fetch the first one with its data
-    if fin_tables:
-        table_id = fin_tables[0]["id"]
-        table_title = fin_tables[0].get("title", "Unknown")
-        print(f"\nFetching financial data for table: {table_title} ({table_id})")
-        table_data = api_get(
-            creds["api_url"],
-            f"credit_analysis/deals/{deal_id}/fin_data_tables/{table_id}/",
-            token,
-        )
-        print_json(f"FINANCIAL DATA — {table_title}", table_data)
-
     print(f"\n{'='*60}")
     print("  Done! Use this data structure knowledge to build your solution.")
     print(f"{'='*60}\n")
