@@ -73,12 +73,10 @@ async function main() {
     throw new Error("No dashboards found.");
   }
 
-  const sections = [];
+  const defaultDashboard =
+    dashboards.find((d) => d.is_default) ?? dashboards[0];
 
-  for (const dashboard of dashboards) {
-    const s = await client.getSections(dashboard.id);
-    sections.push(...s);
-  }
+  const sections = await client.getSections(defaultDashboard.id);
 
   const outputPath = await generatePresentation(deal, sections);
 

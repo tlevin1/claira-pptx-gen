@@ -1,6 +1,7 @@
 export const THEME = {
   colors: {
     navy: "1F3A5F",
+    coverBlue: "4E6D96",
     lightBlue: "D9E6F2",
     border: "B8C7D9",
     text: "1A1A1A",

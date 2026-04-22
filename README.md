@@ -27,13 +27,24 @@ npm install
 2. Create credentials file:
 
 Copy credentials.example.json → credentials.json and fill in:
-
+```
 {
   "auth_url": "...",
   "api_url": "...",
   "email": "...",
   "password": "..."
 }
+```
+
+3. Set your OpenAI API key:
+
+Get a key from [platform.openai.com](https://platform.openai.com) → API keys, then export it in your terminal:
+
+```bash
+export OPENAI_API_KEY=sk-...
+```
+
+You can also add it to your shell profile (`~/.zshrc` or `~/.bashrc`) to avoid re-exporting each session.
 
 ---
 
@@ -64,10 +75,8 @@ The system is structured into three main layers:
 ### 2. Transformation Layer
 - Converts raw API data into structured slide data
 - Uses section classification (e.g., company overview, financials, risks)
-- Extracts key content such as:
-  - Bullet summaries
-  - KPI metrics
-  - Table rows
+- **LLM-powered extraction (gpt-4o)** for content-heavy slides: Company Overview, Transaction Overview, Credit Risks — the model reads the raw HTML and returns structured JSON (bullets, labels, mitigants, etc.)
+- **Rule-based extraction** for structured data slides: Financials, Credit Info — regex parsing is more reliable and cheaper for tabular data
 
 ### 3. Presentation Layer
 - Uses `pptxgenjs` to generate slides
@@ -83,7 +92,6 @@ Slides are rendered in a fixed sequence (independent of API order):
 
 ## Future Improvements
 
-- Use an LLM to improve content summarization and structuring
 - Better handling of additional section types
 - Add support for images and charts
 - Improve financial data extraction for more accurate KPI generation
@@ -94,6 +102,7 @@ Slides are rendered in a fixed sequence (independent of API order):
 - TypeScript
 - Node.js
 - pptxgenjs
+- OpenAI API (gpt-4o)
 - Claira REST API
 
 ## Evaluation Criteria

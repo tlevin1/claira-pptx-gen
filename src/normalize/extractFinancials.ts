@@ -9,13 +9,17 @@ export interface FinancialsSlideData {
   summaryBullets: string[];
 }
 
+function stripCitations(text: string): string {
+  return text.replace(/\s*\[\d+\]/g, "").trim();
+}
+
 function looksNumeric(value: string): boolean {
   return /[%$(),0-9]/.test(value);
 }
 
 function tryParseMetricLine(line: string): [string, string] | null {
   const colonMatch = line.match(/^([^:]{2,}):\s*(.+)$/);
-  if (colonMatch && looksNumeric(colonMatch[2])) {
+  if (colonMatch) {
     return [colonMatch[1].trim(), colonMatch[2].trim()];
   }
 
@@ -53,17 +57,25 @@ export function extractFinancials(section: Section): FinancialsSlideData {
   const html = section.value?.text || "";
   const parsed = parseHtmlContent(html);
 
-  const allLines = parsed.headings.flatMap((h) => [...h.paragraphs, ...h.bullets]);
+  const ANALYST_HEADINGS = ["preliminary financial risks", "analyst notes", "risks"];
+  const isAnalystSection = (h: string) =>
+    ANALYST_HEADINGS.some((k) => h.toLowerCase().includes(k));
 
   const tableRows: string[][] = [];
   const summaryBullets: string[] = [];
 
-  for (const line of allLines) {
-    const metric = tryParseMetricLine(line);
-    if (metric) {
-      tableRows.push(metric);
+  for (const heading of parsed.headings) {
+    const lines = [...heading.paragraphs, ...heading.bullets].map(stripCitations);
+
+    if (isAnalystSection(heading.heading)) {
+      summaryBullets.push(...lines.filter((l) => !l.endsWith(":")));
     } else {
-      summaryBullets.push(line);
+      for (const line of lines) {
+        const metric = tryParseMetricLine(line);
+        if (metric) {
+          tableRows.push(metric);
+        }
+      }
     }
   }
 
@@ -72,6 +84,6 @@ export function extractFinancials(section: Section): FinancialsSlideData {
     title,
     columns: ["Metric", "Value"],
     rows: tableRows.slice(0, 12),
-    summaryBullets: summaryBullets.slice(0, 4),
+    summaryBullets: summaryBullets.slice(0, 5),
   };
 }

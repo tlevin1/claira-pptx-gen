@@ -1,3 +1,7 @@
+import OpenAI from "openai";
+
+const client = new OpenAI();
+
 export interface LlmExtractionRequest {
   sectionTitle: string;
   sectionType: string;
@@ -10,14 +14,13 @@ export async function extractStructuredSlideData(
 ): Promise<any> {
   const prompt = buildPrompt(request);
 
-  // Replace this block with your actual LLM call.
-  // Example with an SDK later:
-  // const response = await client.responses.create(...)
-  // return JSON.parse(response.output_text);
+  const response = await client.responses.create({
+    model: "gpt-4o",
+    input: prompt,
+    text: { format: { type: "json_object" } },
+  });
 
-  throw new Error(
-    `LLM extraction not yet wired. Prompt prepared:\n\n${prompt}`
-  );
+  return JSON.parse(response.output_text);
 }
 
 function buildPrompt(request: LlmExtractionRequest): string {

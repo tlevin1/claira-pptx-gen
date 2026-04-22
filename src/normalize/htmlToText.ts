@@ -28,7 +28,7 @@ export function parseHtmlContent(html: string): ParsedHtmlContent {
         return;
       }
 
-      if (tag === "h2" || tag === "h3") {
+      if (tag === "h2" || tag === "h3" || tag === "h4") {
         current = {
           heading: text,
           paragraphs: [],
